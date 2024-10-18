@@ -1,63 +1,71 @@
-import { StatusBar } from "expo-status-bar";
-import {
-  Button,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
+import { Alert, StatusBar, StyleSheet, Text, View } from "react-native";
+import List from "./components/list";
+import { useState } from "react";
 
 export default function App() {
-  const logMe = (text: string) => {
-    console.log("Hello from React Native", text);
+  const [todos, setTodos] = useState([
+    {
+      id: 1,
+      message: "Wake Up",
+      isDone: false,
+    },
+    {
+      id: 2,
+      message: "Go To Work",
+      isDone: true,
+    },
+    {
+      id: 3,
+      message: "Go To Code",
+      isDone: false,
+    },
+    {
+      id: 4,
+      message: "Go To Sleep",
+      isDone: false,
+    },
+  ]);
+
+  const changeStatus = (id: number) => {
+    setTodos((prevState) =>
+      prevState.map((td) => (td.id === id ? { ...td, isDone: true } : td))
+    );
   };
 
-  const showAlert = () => {
-    Alert.alert("Hello from React Native", "Hello i am new description", [
+  const undoStatus = (id: number) => {
+    Alert.alert("Undo Status", "Are you sure?", [
       {
         text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
+        onPress: () => {},
         style: "cancel",
       },
       {
-        text: "Exit",
-        onPress: () => console.log("Exit Pressed"),
-        style: "default",
+        text: "Yes",
+        onPress: () => {
+          setTodos((prevState) =>
+            prevState.map((td) =>
+              td.id === id ? { ...td, isDone: false } : td
+            )
+          );
+        },
       },
     ]);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text} onPress={() => logMe("App")}>
-        Hello React Native
-      </Text>
-      <Text style={styles.text} numberOfLines={3}>
-        Lorem Ipsum is simply dummy text of the printing and typesetting
-        industry. Lorem Ipsum has been the industry's standard dummy text ever
-        since the 1500s,{" "}
-      </Text>
-      <Button title="My First Button" color={"#000"} />
-      <Pressable
-        style={({ pressed }) => [
-          {
-            backgroundColor: pressed ? "red" : "blue",
-          },
-          styles.btn,
-        ]}
-        onPress={showAlert}
-      >
-        <Text style={styles.btnText}>Show Alert</Text>
-      </Pressable>
-      <TouchableOpacity
-        style={[styles.btn, { backgroundColor: "red" }]}
-        activeOpacity={0.6}
-      >
-        <Text style={styles.btnText}>I am touchableOpacity</Text>
-      </TouchableOpacity>
-      <StatusBar style="auto" />
+      <Text style={styles.titleText}>RN TODOS</Text>
+      <View style={styles.listContainer}>
+        {todos.map((td) => (
+          <List
+            key={td.id}
+            {...td}
+            changeStatus={changeStatus}
+            undoStatus={undoStatus}
+          />
+        ))}
+      </View>
+      <StatusBar barStyle={"dark-content"} backgroundColor={"#fff"} />
     </View>
   );
 }
@@ -73,6 +81,18 @@ const styles = StyleSheet.create({
   text: {
     textAlign: "center",
     fontSize: 20,
+  },
+  titleText: {
+    textAlign: "center",
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "black",
+  },
+  listContainer: {
+    flex: 1,
+    gap: 5,
+    marginTop: 10,
+    marginHorizontal: 10,
   },
   btnText: {
     color: "white",
