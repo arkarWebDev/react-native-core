@@ -1,6 +1,7 @@
 import { Alert, StatusBar, StyleSheet, Text, View } from "react-native";
-import List from "./components/list";
+import List from "../components/list";
 import { useState } from "react";
+import { Link } from "expo-router";
 
 export default function App() {
   const [todos, setTodos] = useState([
@@ -54,7 +55,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titleText}>RN TODOS</Text>
+      <Link href={"/stopwatch"}>Go to stopwatch app</Link>
       <View style={styles.listContainer}>
         {todos.map((td) => (
           <List

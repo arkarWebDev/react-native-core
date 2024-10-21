@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { theme } from "../theme";
 
 type ListProps = {
   id: number;
@@ -12,7 +13,12 @@ type ListProps = {
 
 const List = ({ id, message, isDone, changeStatus, undoStatus }: ListProps) => {
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        isDone ? { backgroundColor: theme.mintGray } : undefined,
+      ]}
+    >
       <Text
         style={[
           styles.text,
@@ -28,7 +34,7 @@ const List = ({ id, message, isDone, changeStatus, undoStatus }: ListProps) => {
         <AntDesign
           name="close"
           size={24}
-          color="black"
+          color="red"
           style={{ opacity: 0.5 }}
           onPress={() => undoStatus(id)}
         />
@@ -36,7 +42,7 @@ const List = ({ id, message, isDone, changeStatus, undoStatus }: ListProps) => {
         <AntDesign
           name="check"
           size={24}
-          color="black"
+          color="green"
           onPress={() => changeStatus(id)}
         />
       )}
