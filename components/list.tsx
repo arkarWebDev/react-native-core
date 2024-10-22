@@ -4,11 +4,11 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { theme } from "../theme";
 
 type ListProps = {
-  id: number;
+  id: string;
   message: string;
   isDone: boolean;
-  changeStatus: (id: number) => void;
-  undoStatus: (id: number) => void;
+  changeStatus: (id: string) => void;
+  undoStatus: (id: string) => void;
 };
 
 const List = ({ id, message, isDone, changeStatus, undoStatus }: ListProps) => {
@@ -32,15 +32,15 @@ const List = ({ id, message, isDone, changeStatus, undoStatus }: ListProps) => {
       </Text>
       {isDone ? (
         <AntDesign
-          name="close"
+          name="check"
           size={24}
-          color="red"
+          color="black"
           style={{ opacity: 0.5 }}
           onPress={() => undoStatus(id)}
         />
       ) : (
         <AntDesign
-          name="check"
+          name="close"
           size={24}
           color="green"
           onPress={() => changeStatus(id)}
@@ -58,7 +58,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     paddingHorizontal: 20,
-    borderBottomColor: "gray",
+    paddingVertical: 10,
+    borderBottomColor: theme.mintGray,
     borderBottomWidth: 1,
   },
   text: {
