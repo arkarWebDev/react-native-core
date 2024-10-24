@@ -6,11 +6,16 @@ import {
   TextInput,
   View,
   Text,
+  Pressable,
+  Platform,
+  UIManager,
+  LayoutAnimation,
 } from "react-native";
 import List from "../components/list";
 import { useEffect, useState } from "react";
 import { theme } from "../theme";
 import { getData, storeData } from "../utils/storage";
+import * as Haptics from "expo-haptics";
 
 type TodoListType = {
   id: string;
@@ -43,15 +48,23 @@ type TodoListType = {
 
 const KEY = "todo-app";
 
+if (Platform.OS === "android") {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+
 export default function App() {
   const [inputVal, setInputVal] = useState<string>("");
   const [todos, setTodos] = useState<TodoListType[]>([]);
 
   const changeStatus = async (id: string) => {
-    setTodos((prevState) =>
-      prevState.map((td) => (td.id === id ? { ...td, isDone: true } : td))
+    const updatedTodos = todos.map((td) =>
+      td.id === id ? { ...td, isDone: true } : td
     );
-    await storeData(todos);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setTodos(updatedTodos);
+    await storeData(updatedTodos);
   };
 
   const undoStatus = (id: string) => {
@@ -64,12 +77,12 @@ export default function App() {
       {
         text: "Yes",
         onPress: async () => {
-          setTodos((prevState) =>
-            prevState.map((td) =>
-              td.id === id ? { ...td, isDone: false } : td
-            )
+          const updatedTodos = todos.map((td) =>
+            td.id === id ? { ...td, isDone: false } : td
           );
-          await storeData(todos);
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          setTodos(updatedTodos);
+          await storeData(updatedTodos);
         },
       },
     ]);
@@ -80,9 +93,16 @@ export default function App() {
       ...todos,
       { id: String(todos.length + 1), message: inputVal, isDone: false },
     ];
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setTodos(newTodos);
     await storeData(newTodos);
     setInputVal("");
+  };
+
+  const deleteAllTodos = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setTodos([]);
+    await storeData([]);
   };
 
   useEffect(() => {
@@ -128,7 +148,6 @@ export default function App() {
           }
           data={todos}
           renderItem={({ item }) => {
-            console.log(item);
             return (
               <List
                 changeStatus={changeStatus}
@@ -138,6 +157,18 @@ export default function App() {
             );
           }}
           keyExtractor={(item) => item.id}
+          ListFooterComponent={
+            <>
+              {todos?.length !== 0 && (
+                <Pressable
+                  style={styles.dangerContainer}
+                  onPress={deleteAllTodos}
+                >
+                  <Text style={styles.textDanger}>Delete all</Text>
+                </Pressable>
+              )}
+            </>
+          }
         />
       </View>
       <StatusBar barStyle={"dark-content"} backgroundColor={"#fff"} />
@@ -169,6 +200,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 10,
     marginHorizontal: 10,
+    width: "100%",
+    paddingHorizontal: 10,
   },
   inputBox: {
     borderColor: theme.mintGray,
@@ -177,5 +210,18 @@ const styles = StyleSheet.create({
     padding: 6,
     marginVertical: 2,
     width: "100%",
+  },
+  dangerContainer: {
+    backgroundColor: "red",
+    paddingVertical: 10,
+    marginVertical: 10,
+    borderRadius: 8,
+    width: "100%",
+  },
+  textDanger: {
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#fff",
   },
 });
