@@ -24,6 +24,7 @@ import { Tabs } from "expo-router";
 import React from "react";
 import Feather from "@expo/vector-icons/Feather";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Layout = () => {
   return (
@@ -48,11 +49,11 @@ const Layout = () => {
         }}
       />
       <Tabs.Screen
-        name="creation"
+        name="notifications"
         options={{
-          title: "Create",
+          title: "Notis",
           tabBarIcon: ({ color, size }) => (
-            <AntDesign name="addfolder" size={size} color={color} />
+            <Ionicons name="notifications-outline" size={size} color={color} />
           ),
         }}
       />
