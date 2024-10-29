@@ -41,7 +41,7 @@ const Layout = () => {
       <Tabs.Screen
         name="stopwatch"
         options={{
-          title: "Stopwatch",
+          title: "Events",
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <AntDesign name="clockcircleo" size={size} color={color} />

@@ -1,22 +1,79 @@
 import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  LayoutAnimation,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import EventInput from "../../components/eventInput";
+import EventList from "../../components/eventList";
+import CountDownTimer from "../../components/countDownTimer";
+import { getData, storeData } from "../../utils/storage";
 
+const KEY = "@events";
+
+export type Event = {
+  id: string;
+  name: string;
+  date: Date;
+};
 const StopWatch = () => {
-  const router = useRouter();
+  const [events, setEvents] = useState<Event[]>([]);
+  const [nearestEv, setNearestEv] = useState<Event | null>(null);
 
-  const gotoOwnApp = () => {
-    //   server code
-    // codes
-    console.log("lets go to own app");
-    router.navigate("/creation");
+  const addNewEvent = async (event: Event) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    const updatedEvents = [...events, event];
+    setEvents(updatedEvents);
+    await storeData(KEY, updatedEvents);
   };
+
+  const deleteEvent = async (id: string) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    const updatedEvents = events.filter((ev) => ev.id !== id);
+    setEvents(updatedEvents);
+    await storeData(KEY, updatedEvents);
+  };
+
+  const nearestEvent = () => {
+    const currentDate = new Date();
+    const upcomingevent = events.filter((ev) => ev.date > currentDate);
+    if (upcomingevent.length === 0) {
+      setNearestEv(null);
+      return;
+    }
+    const nearest = upcomingevent.reduce((eventA, eventB) => {
+      return eventB.date < eventA.date ? eventB : eventA;
+    });
+    setNearestEv(nearest);
+  };
+
+  useEffect(() => {
+    const getEvents = async () => {
+      const eventData: Event[] = await getData(KEY);
+      const parsedData = eventData.map((ev: Event) => ({
+        ...ev,
+        date: new Date(ev.date),
+      }));
+      setEvents(parsedData);
+    };
+
+    getEvents();
+  }, []);
+
+  useEffect(() => {
+    if (events.length > 0) {
+      nearestEvent();
+    }
+  }, [events]);
+
   return (
     <View style={styles.container}>
-      <Text>StopWatch</Text>
-      <TouchableOpacity onPress={gotoOwnApp}>
-        <Text>Go to own app</Text>
-      </TouchableOpacity>
+      <EventInput addNewEvent={addNewEvent} />
+      {nearestEv && <CountDownTimer event={nearestEv} />}
+      <EventList events={events} deleteEvent={deleteEvent} />
     </View>
   );
 };

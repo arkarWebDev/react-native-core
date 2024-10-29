@@ -64,7 +64,7 @@ export default function App() {
     );
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setTodos(updatedTodos);
-    await storeData(updatedTodos);
+    await storeData(KEY, updatedTodos);
   };
 
   const undoStatus = (id: string) => {
@@ -82,7 +82,7 @@ export default function App() {
           );
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           setTodos(updatedTodos);
-          await storeData(updatedTodos);
+          await storeData(KEY, updatedTodos);
         },
       },
     ]);
@@ -95,14 +95,14 @@ export default function App() {
     ];
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setTodos(newTodos);
-    await storeData(newTodos);
+    await storeData(KEY, newTodos);
     setInputVal("");
   };
 
   const deleteAllTodos = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setTodos([]);
-    await storeData([]);
+    await storeData(KEY, []);
   };
 
   useEffect(() => {

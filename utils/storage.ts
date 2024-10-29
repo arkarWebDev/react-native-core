@@ -1,10 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const KEY = "todo-app";
-
-export const storeData = async (value: object) => {
+export const storeData = async (key: string, value: object) => {
   try {
-    await AsyncStorage.setItem(KEY, JSON.stringify(value));
+    await AsyncStorage.setItem(key, JSON.stringify(value));
   } catch {
     return null;
   }

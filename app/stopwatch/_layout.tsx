@@ -10,7 +10,7 @@ const Layout = () => {
       <Stack.Screen
         name="index"
         options={{
-          title: "Stopwatch App",
+          title: "Event Countdown App",
           headerRight: () => (
             <Link href="/stopwatch/record" asChild>
               <Pressable hitSlop={20}>
